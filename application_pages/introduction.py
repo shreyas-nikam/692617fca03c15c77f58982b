@@ -31,7 +31,7 @@ def main():
 
     **P-E-C Loop Visualization:**
     """)
-    st.image("https://i.imgur.com/example_pec_diagram.png", caption="Conceptual Diagram of the Planner-Executor-Critic (P-E-C) Loop. (Placeholder image)", use_column_width=True)
+    # Image removed: P-E-C Loop diagram
     st.markdown(r"""
     *   **Planner:** Takes input from the environment and the Critic's feedback, outputs a `Plan`.
     *   **Executor:** Takes the `Plan` from the Planner, interacts with the `Environment`, outputs `Actions` and updates the `Environment`.
@@ -49,7 +49,7 @@ def main():
 
     **ReAct Chains Visualization:**
     """)
-    st.image("https://i.imgur.com/example_react_diagram.png", caption="Conceptual Diagram of ReAct (Reasoning and Acting) Chains. (Placeholder image)", use_column_width=True)
+    # Image removed: ReAct Chains diagram
     st.markdown("""
     *   **Thought:** The agent reasons about the current situation, identifies sub-goals, and decides on the next course of action.
     *   **Action:** The agent executes a specific action, which might involve using a tool, interacting with the environment, or gathering more information.

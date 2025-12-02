@@ -27,14 +27,12 @@ def main(simulate_market_movement_func, execute_trade_func, calculate_portfolio_
     st.markdown("---")
 
     st.subheader("P-E-C Loop Visualization")
-    st.image("https://i.imgur.com/example_pec_diagram.png", caption="Conceptual Diagram of the Planner-Executor-Critic (P-E-C) Loop.", use_column_width=True)
     st.markdown(r"""
     During single-step runs, the currently active component of the P-E-C loop (Planner, Executor, or Critic) would be conceptually highlighted here.
     The Planner uses Decision Tree Logic: $$ \text{If Critique Result} = \text{Negative}, \text{then Plan Revision occurs} $$
     """)
 
     st.subheader("ReAct (Reasoning and Acting) Chains Visualization")
-    st.image("https://i.imgur.com/example_react_diagram.png", caption="Conceptual Diagram of ReAct (Reasoning and Acting) Chains.", use_column_width=True)
     st.markdown("""
     This flow depicts interleaved 'Thought' and 'Action' steps. In a live simulation, real-time highlighting would show the agent's current focus.
     """)
@@ -64,7 +62,7 @@ def main(simulate_market_movement_func, execute_trade_func, calculate_portfolio_
         holdings_data = [{"Stock ID": s_id, "Quantity": qty, "Current Price": f"${current_prices.get(s_id, 0):,.2f}", "Value": f"${qty * current_prices.get(s_id, 0):,.2f}"}
                          for s_id, qty in st.session_state.portfolio["holdings"].items()]
         if holdings_data:
-            st.dataframe(pd.DataFrame(holdings_data), use_container_width=True)
+            st.dataframe(pd.DataFrame(holdings_data), width='stretch')
         else:
             st.info("No stock holdings yet.")
     else:
@@ -79,7 +77,7 @@ def main(simulate_market_movement_func, execute_trade_func, calculate_portfolio_
         ax.plot(df_history["step"], df_history["value"], label="Portfolio Value", marker='o')
         ax.set_title("Portfolio Value Over Simulation Steps")
         ax.set_xlabel("Simulation Step")
-        ax.set_ylabel("Portfolio Value ($")")
+        ax.set_ylabel("Portfolio Value ($)")
         ax.legend()
         ax.grid(True)
         st.pyplot(fig)
@@ -288,10 +286,10 @@ def run_simulation_step_silent(simulate_market_movement_func, execute_trade_func
 
     # 3. Executor executes
     executed_trades = []
+    updated_portfolio = st.session_state.portfolio
     for action in planner_plan:
-        updated_portfolio, trade_record = execute_trade_func(st.session_state.portfolio, action["stock_id"], action["quantity"], action["price"], action["action"])
+        updated_portfolio, trade_record = execute_trade_func(updated_portfolio, action["stock_id"], action["quantity"], action["price"], action["action"])
         executed_trades.append(trade_record)
-        
     st.session_state.portfolio = updated_portfolio
     st.session_state.executor_action = executed_trades
 

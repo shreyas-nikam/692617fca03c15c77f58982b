@@ -32,7 +32,7 @@ def main(initialize_investment_environment_func, PlannerAgent_cls, ExecutorAgent
 
     st.subheader("Environment Parameters")
     st.session_state.initial_cash = st.number_input(
-        "Initial Cash ($")",
+        "Initial Cash ($)",
         min_value=1000.0,
         value=st.session_state.get("initial_cash", 100000.0),
         step=1000.0,
@@ -56,7 +56,7 @@ def main(initialize_investment_environment_func, PlannerAgent_cls, ExecutorAgent
                 st.session_state.initial_prices_input[symbol] = round(np.random.uniform(50, 200), 2)
             
             st.session_state.initial_prices_input[symbol] = st.number_input(
-                f"Initial Price for {symbol} ($")",
+                f"Initial Price for {symbol} ($)",
                 min_value=1.0,
                 value=st.session_state.initial_prices_input[symbol],
                 step=1.0,
