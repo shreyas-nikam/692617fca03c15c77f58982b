@@ -3,9 +3,24 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import google.generativeai as genai
+import json
 sns.set_theme(style="whitegrid")
 
 # --- Utility Functions ---
+def get_gemini_model():
+    """Initialize and return Gemini model if API key is configured."""
+    api_key = st.session_state.get("gemini_api_key", "")
+    if not api_key:
+        return None
+    try:
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel('gemini-2.5-flash')
+        return model
+    except Exception as e:
+        st.error(f"Error initializing Gemini: {str(e)}")
+        return None
+
 @st.cache_data(ttl="2h")
 def initialize_investment_environment(initial_cash: float, stock_symbols: list, initial_prices: dict, volatility: float) -> dict:
     market_data = {symbol: {"price": initial_prices.get(symbol, 100.0), "volatility": volatility} for symbol in stock_symbols}
@@ -76,10 +91,10 @@ class PlannerAgent:
         self.risk_tolerance = risk_tolerance
         self.initial_prices = initial_prices
         st.session_state.setdefault("planner_plan_history", [])
-        self.original_objective = objective # Store original objective for reset or comparison
+        self.original_objective = objective
+        self.model = get_gemini_model()
 
     def plan(self, current_state: dict, mis_specify_goal: bool = False) -> list:
-        plan_actions = []
         current_cash = current_state["cash"]
         current_holdings = current_state["portfolio"]
         market_prices = current_state["current_prices"]
@@ -91,118 +106,243 @@ class PlannerAgent:
                 effective_objective = "Invest aggressively in volatile assets"
             elif self.objective == "Safely grow portfolio":
                 effective_objective = "Take high risks for short-term gains"
-            elif self.objective == "Execute high volume trades regardless of risk": # If agent misperception fault changed it
+            elif self.objective == "Execute high volume trades regardless of risk":
                  effective_objective = "Execute high volume trades regardless of risk"
             else:
                 effective_objective = "Maximize short-term trading volume"
         
-        st.session_state.current_objective_display = effective_objective # To show in UI
+        st.session_state.current_objective_display = effective_objective
         
-        # Strategy based on effective_objective and risk_tolerance
-        if "volatile assets" in effective_objective.lower() or "high risks" in effective_objective.lower() or "high volume trades" in effective_objective.lower():
-            # Aggressive strategy
+        # Use Gemini LLM for planning if available
+        if self.model:
+            plan_actions = self._plan_with_llm(current_cash, current_holdings, market_prices, effective_objective)
+        else:
+            # Fallback to rule-based planning
+            plan_actions = self._plan_rule_based(current_cash, current_holdings, market_prices, effective_objective)
+
+        st.session_state.planner_plan_history.append({"step": st.session_state.current_step, "plan": plan_actions, "objective": effective_objective})
+        return plan_actions
+    
+    def _plan_with_llm(self, current_cash: float, current_holdings: dict, market_prices: dict, objective: str) -> list:
+        """Use Gemini LLM to generate trading plan."""
+        try:
+            prompt = f"""You are a financial trading AI agent. Analyze the current market state and generate a trading plan.
+
+Objective: {objective}
+Risk Tolerance: {self.risk_tolerance}
+
+Current Portfolio:
+- Cash Available: ${current_cash:,.2f}
+- Holdings: {json.dumps(current_holdings, indent=2)}
+
+Current Market Prices:
+{json.dumps(market_prices, indent=2)}
+
+Initial Prices (for reference):
+{json.dumps(self.initial_prices, indent=2)}
+
+Generate a trading plan as a JSON array. Each trade should be an object with:
+- "action": "BUY" or "SELL"
+- "stock_id": the stock symbol
+- "quantity": integer number of shares
+- "price": current market price
+- "reasoning": brief explanation for this trade
+
+Consider:
+1. Your objective and risk tolerance
+2. Current market prices vs initial prices
+3. Available cash and current holdings
+4. Diversification and portfolio balance
+
+Respond ONLY with a valid JSON array, no other text. If no trades are recommended, return an empty array [].
+
+Example format:
+[
+  {{"action": "BUY", "stock_id": "AAPL", "quantity": 10, "price": 150.0, "reasoning": "Price dropped below initial, good buy opportunity"}}
+]"""
+
+            response = self.model.generate_content(prompt)
+            response_text = response.text.strip()
+            
+            # Extract JSON from response (handle markdown code blocks)
+            if "```json" in response_text:
+                response_text = response_text.split("```json")[1].split("```")[0].strip()
+            elif "```" in response_text:
+                response_text = response_text.split("```")[1].split("```")[0].strip()
+            
+            plan_actions = json.loads(response_text)
+            
+            # Validate and clean the plan
+            validated_actions = []
+            for action in plan_actions:
+                if all(k in action for k in ["action", "stock_id", "quantity", "price"]):
+                    validated_actions.append({
+                        "action": action["action"],
+                        "stock_id": action["stock_id"],
+                        "quantity": int(action["quantity"]),
+                        "price": float(action["price"])
+                    })
+            
+            return validated_actions
+            
+        except Exception as e:
+            st.warning(f"LLM planning failed, using rule-based fallback: {str(e)}")
+            return self._plan_rule_based(current_cash, current_holdings, market_prices, objective)
+    
+    def _plan_rule_based(self, current_cash: float, current_holdings: dict, market_prices: dict, objective: str) -> list:
+        """Fallback rule-based planning."""
+        plan_actions = []
+        
+        if "volatile assets" in objective.lower() or "high risks" in objective.lower() or "high volume trades" in objective.lower():
             for symbol, price_data in market_prices.items():
-                if current_cash > price_data: # Enough cash to buy at least one
-                    quantity_to_buy = int((current_cash * 0.2) / price_data) # Buy 20% of available cash value
+                if current_cash > price_data:
+                    quantity_to_buy = int((current_cash * 0.2) / price_data)
                     if quantity_to_buy > 0:
                         plan_actions.append({"action": "BUY", "stock_id": symbol, "quantity": quantity_to_buy, "price": price_data})
                         current_cash -= quantity_to_buy * price_data
             if current_holdings:
-                for symbol, quantity in list(current_holdings.items()): # Iterate on a copy
-                    if np.random.rand() > 0.7: # Randomly sell some high-risk assets
+                for symbol, quantity in list(current_holdings.items()):
+                    if np.random.rand() > 0.7:
                         quantity_to_sell = int(quantity * 0.3)
                         if quantity_to_sell > 0:
                             plan_actions.append({"action": "SELL", "stock_id": symbol, "quantity": quantity_to_sell, "price": market_prices[symbol]})
-
-        elif "maximize returns" in effective_objective.lower():
-            # Moderate strategy
+        elif "maximize returns" in objective.lower():
             for symbol, price_data in market_prices.items():
-                # Check if current price is lower than initial price, suggesting a buying opportunity (oversimplified)
                 if price_data < self.initial_prices.get(symbol, price_data * 1.05) and current_cash > price_data:
-                    quantity_to_buy = int((current_cash * 0.1) / price_data) # Buy 10% of available cash value
+                    quantity_to_buy = int((current_cash * 0.1) / price_data)
                     if quantity_to_buy > 0:
                         plan_actions.append({"action": "BUY", "stock_id": symbol, "quantity": quantity_to_buy, "price": price_data})
                         current_cash -= quantity_to_buy * price_data
-            # Consider selling if price significantly higher than initial
-            for symbol, quantity in list(current_holdings.items()): # Iterate on a copy
-                if market_prices[symbol] > self.initial_prices.get(symbol, market_prices[symbol] * 0.95) * 1.1: # 10% profit
+            for symbol, quantity in list(current_holdings.items()):
+                if market_prices[symbol] > self.initial_prices.get(symbol, market_prices[symbol] * 0.95) * 1.1:
                     quantity_to_sell = int(quantity * 0.2)
                     if quantity_to_sell > 0:
                         plan_actions.append({"action": "SELL", "stock_id": symbol, "quantity": quantity_to_sell, "price": market_prices[symbol]})
-
-        elif "safely grow portfolio" in effective_objective.lower():
-            # Conservative strategy
+        elif "safely grow portfolio" in objective.lower():
             for symbol, price_data in market_prices.items():
-                if current_cash > price_data: # Ensure there's cash
-                    quantity_to_buy = int((current_cash * 0.05) / price_data) # Buy 5% of available cash value
+                if current_cash > price_data:
+                    quantity_to_buy = int((current_cash * 0.05) / price_data)
                     if quantity_to_buy > 0:
                         plan_actions.append({"action": "BUY", "stock_id": symbol, "quantity": quantity_to_buy, "price": price_data})
                         current_cash -= quantity_to_buy * price_data
-            # Conservative agents typically don't sell aggressively unless significant loss
-
-        st.session_state.planner_plan_history.append({"step": st.session_state.current_step, "plan": plan_actions, "objective": effective_objective})
+        
         return plan_actions
 
 class ExecutorAgent:
     def __init__(self):
         st.session_state.setdefault("trade_log", [])
+        self.model = get_gemini_model()
 
     def execute(self, action_details: dict, environment_state: dict) -> (dict, dict):
-        portfolio = st.session_state.portfolio # Get current portfolio from session state
+        portfolio = st.session_state.portfolio
         
         stock_id = action_details["stock_id"]
         quantity = action_details["quantity"]
         trade_type = action_details["action"]
-        price = environment_state["current_prices"].get(stock_id, 0) # Get actual current price
+        price = environment_state["current_prices"].get(stock_id, 0)
+        
+        # Use LLM to validate trade if available
+        if self.model:
+            should_execute, reasoning = self._validate_with_llm(action_details, portfolio, environment_state)
+            if not should_execute:
+                trade_record_with_step = {
+                    "step": st.session_state.current_step,
+                    "type": trade_type,
+                    "stock_id": stock_id,
+                    "quantity": quantity,
+                    "price": price,
+                    "status": "REJECTED_BY_LLM",
+                    "reason": reasoning
+                }
+                st.session_state.trade_log.append(trade_record_with_step)
+                return portfolio, trade_record_with_step
 
         updated_portfolio, trade_record = execute_trade(portfolio, stock_id, quantity, price, trade_type)
-        
-        # Update session state with new portfolio and trade log
         st.session_state.portfolio = updated_portfolio
         
-        # The trade_record already has the step from the executor call, ensure it's there
-        # No, trade_record comes from execute_trade, doesn't have step. Add it here.
         trade_record_with_step = {"step": st.session_state.current_step, **trade_record}
         st.session_state.trade_log.append(trade_record_with_step)
         
-        # Update environment_state's cash and portfolio (which is a reference to st.session_state.portfolio)
         environment_state["cash"] = st.session_state.portfolio["cash"]
-        environment_state["portfolio"] = st.session_state.portfolio["holdings"] # Only holdings here
+        environment_state["portfolio"] = st.session_state.portfolio["holdings"]
 
         return st.session_state.portfolio, trade_record_with_step
+    
+    def _validate_with_llm(self, action: dict, portfolio: dict, environment_state: dict) -> tuple:
+        """Use Gemini to validate if trade should be executed."""
+        try:
+            prompt = f"""You are a trade execution validator. Analyze if this trade should be executed.
+
+Proposed Trade:
+- Action: {action['action']}
+- Stock: {action['stock_id']}
+- Quantity: {action['quantity']}
+- Price: ${action['price']:.2f}
+
+Current Portfolio:
+- Cash: ${portfolio['cash']:,.2f}
+- Holdings: {json.dumps(portfolio['holdings'], indent=2)}
+
+Market Prices: {json.dumps(environment_state['current_prices'], indent=2)}
+
+Validate if this trade:
+1. Is financially feasible (enough cash for buy, enough shares for sell)
+2. Makes sense given current market conditions
+3. Doesn't expose portfolio to excessive single-position risk
+
+Respond with JSON:
+{{
+  "should_execute": true/false,
+  "reasoning": "brief explanation"
+}}"""
+
+            response = self.model.generate_content(prompt)
+            response_text = response.text.strip()
+            
+            if "```json" in response_text:
+                response_text = response_text.split("```json")[1].split("```")[0].strip()
+            elif "```" in response_text:
+                response_text = response_text.split("```")[1].split("```")[0].strip()
+            
+            result = json.loads(response_text)
+            return result.get("should_execute", True), result.get("reasoning", "LLM validation passed")
+            
+        except Exception as e:
+            return True, f"LLM validation failed, proceeding: {str(e)}"
+
 
 class CriticAgent:
     def __init__(self, target_metrics: dict):
         self.target_metrics = target_metrics
         st.session_state.setdefault("critic_feedback_history", [])
+        self.model = get_gemini_model()
 
     def evaluate(self, environment_state: dict, current_objective: str, previous_portfolio_value: float, risk_tolerance: str) -> dict:
         current_portfolio_value = calculate_portfolio_value(st.session_state.portfolio, environment_state["current_prices"])
         
-        profit = current_portfolio_value - previous_portfolio_value # Profit for this step
-        total_profit_since_init = current_portfolio_value - st.session_state.initial_cash # Total profit
+        profit = current_portfolio_value - previous_portfolio_value
+        total_profit_since_init = current_portfolio_value - st.session_state.initial_cash
         
-        # Simplified risk calculation: higher risk if many trades or if portfolio deviates significantly
         num_trades_this_step = len([t for t in st.session_state.trade_log if t["step"] == st.session_state.current_step])
         
-        # Determine risk_taken based on current actions and risk tolerance
-        # A more sophisticated risk model would use historical volatility, VaR, etc.
         risk_taken = 0.0
         if num_trades_this_step > 0:
-            # Example: Risk increases with the square of trade count and risk tolerance setting
             risk_multiplier = {"safe": 0.01, "moderate": 0.03, "aggressive": 0.06}.get(risk_tolerance.lower(), 0.03)
             risk_taken = num_trades_this_step * risk_multiplier
 
-        # Add penalty if current actions contradict the effective objective (mis-specification)
         if ("high risks" in current_objective.lower() or "aggressive" in current_objective.lower() or "high volume trades" in current_objective.lower()) and risk_tolerance == "safe":
-            risk_taken += 0.1 # Significant penalty for mis-specified goal leading to risky actions
+            risk_taken += 0.1
         elif "safely grow portfolio" in current_objective.lower() and risk_tolerance == "aggressive":
-            risk_taken += 0.05 # Smaller penalty for conservative agent being forced to be aggressive
-
+            risk_taken += 0.05
 
         risk_penalty = self.target_metrics["risk_aversion"] * (risk_taken ** 2)
-        
         reward = calculate_reward(current_portfolio_value, previous_portfolio_value, risk_taken, self.target_metrics["target_returns"], self.target_metrics["risk_aversion"])
+        
+        # Use LLM for enhanced feedback if available
+        if self.model:
+            llm_feedback = self._evaluate_with_llm(current_portfolio_value, profit, risk_taken, current_objective, risk_tolerance, num_trades_this_step)
+        else:
+            llm_feedback = None
         
         feedback = {
             "step": st.session_state.current_step,
@@ -213,22 +353,91 @@ class CriticAgent:
             "calculated_reward": reward,
             "message": "Portfolio updated."
         }
+        
+        if llm_feedback:
+            feedback["llm_analysis"] = llm_feedback
+            feedback["message"] = llm_feedback.get("summary", feedback["message"])
 
-        if current_portfolio_value < previous_portfolio_value * (1 - self.target_metrics["max_risk"]) and previous_portfolio_value != 0: # Avoid division by zero
-            feedback["message"] = f"WARNING: Portfolio value dropped significantly beyond max risk ({self.target_metrics['max_risk']*100:.2f}%)."
+        if current_portfolio_value < previous_portfolio_value * (1 - self.target_metrics["max_risk"]) and previous_portfolio_value != 0:
+            feedback["message"] = f"WARNING: Portfolio value dropped significantly beyond max risk ({self.target_metrics['max_risk']*100:.2f}%). " + feedback["message"]
             feedback["status"] = "warning"
         elif total_profit_since_init < st.session_state.initial_cash * self.target_metrics["target_returns"] and st.session_state.current_step > 0:
-            feedback["message"] = f"INFO: Below target returns of {self.target_metrics['target_returns']*100:.2f}% (current total profit: ${total_profit_since_init:,.2f})."
             feedback["status"] = "info"
         else:
             feedback["status"] = "success"
 
         st.session_state.critic_feedback_history.append(feedback)
         return feedback
+    
+    def _evaluate_with_llm(self, portfolio_value: float, profit: float, risk_taken: float, objective: str, risk_tolerance: str, num_trades: int) -> dict:
+        """Use Gemini for nuanced performance evaluation."""
+        try:
+            recent_trades = [t for t in st.session_state.trade_log if t["step"] == st.session_state.current_step]
+            
+            prompt = f"""You are a financial performance critic evaluating an AI trading agent's actions.
+
+Objective: {objective}
+Risk Tolerance: {risk_tolerance}
+Target Returns: {self.target_metrics['target_returns']*100:.2f}%
+
+Step Performance:
+- Portfolio Value: ${portfolio_value:,.2f}
+- Profit This Step: ${profit:,.2f}
+- Risk Taken: {risk_taken:.4f}
+- Number of Trades: {num_trades}
+
+Recent Trades:
+{json.dumps(recent_trades, indent=2)}
+
+Provide evaluation as JSON:
+{{
+  "summary": "Brief overall assessment",
+  "strengths": ["list of positive aspects"],
+  "concerns": ["list of concerns or risks"],
+  "recommendations": ["suggestions for improvement"],
+  "alignment_score": 0-10 (how well actions align with objective and risk tolerance)
+}}"""
+
+            response = self.model.generate_content(prompt)
+            response_text = response.text.strip()
+            
+            if "```json" in response_text:
+                response_text = response_text.split("```json")[1].split("```")[0].strip()
+            elif "```" in response_text:
+                response_text = response_text.split("```")[1].split("```")[0].strip()
+            
+            return json.loads(response_text)
+            
+        except Exception as e:
+            return {"summary": f"LLM evaluation failed: {str(e)}", "alignment_score": 5}
 
 # --- Main app.py content starts here ---
 st.set_page_config(page_title="QuLab", layout="wide")
 st.sidebar.image("https://www.quantuniversity.com/assets/img/logo5.jpg")
+st.sidebar.divider()
+
+# API Key Configuration
+with st.sidebar.expander("🔑 LLM Configuration", expanded=not st.session_state.get("gemini_api_key")):
+    st.markdown("""Configure Gemini API to use actual LLM agents instead of rule-based simulation.
+    
+[Get free API key from Google AI Studio](https://makersuite.google.com/app/apikey)""")
+    
+    api_key = st.text_input(
+        "Gemini API Key",
+        value=st.session_state.get("gemini_api_key", ""),
+        type="password",
+        help="Enter your Google Gemini API key"
+    )
+    
+    if api_key:
+        st.session_state.gemini_api_key = api_key
+        if get_gemini_model():
+            st.success("✅ Gemini API configured successfully!")
+        else:
+            st.error("❌ Failed to initialize Gemini. Check your API key.")
+    else:
+        st.info("ℹ️ No API key provided. Using rule-based fallback agents.")
+
 st.sidebar.divider()
 st.title("QuLab: Agentic AI Systems in Finance")
 st.divider()

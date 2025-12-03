@@ -149,6 +149,32 @@ def main(simulate_market_movement_func, execute_trade_func, calculate_portfolio_
     if st.session_state.critic_feedback_history:
         latest_feedback = st.session_state.critic_feedback_history[-1]
         st.json(latest_feedback)
+        
+        # Display LLM analysis if available
+        if "llm_analysis" in latest_feedback and latest_feedback["llm_analysis"]:
+            st.markdown("##### 🤖 LLM Critic Analysis")
+            analysis = latest_feedback["llm_analysis"]
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                if "strengths" in analysis:
+                    st.markdown("**✅ Strengths:**")
+                    for strength in analysis["strengths"]:
+                        st.markdown(f"- {strength}")
+                        
+            with col2:
+                if "concerns" in analysis:
+                    st.markdown("**⚠️ Concerns:**")
+                    for concern in analysis["concerns"]:
+                        st.markdown(f"- {concern}")
+            
+            if "recommendations" in analysis:
+                st.markdown("**💡 Recommendations:**")
+                for rec in analysis["recommendations"]:
+                    st.markdown(f"- {rec}")
+                    
+            if "alignment_score" in analysis:
+                st.metric("Objective Alignment Score", f"{analysis['alignment_score']}/10")
     else:
         st.info("No critic feedback yet.")
 

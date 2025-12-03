@@ -35,7 +35,7 @@ This application is structured into four main sections, each offering distinct f
     *   Offers a detailed breakdown of the Critic's reward function for the last step.
     *   Maintains a comprehensive trade log of all transactions executed by the Executor.
     *   Showcases the internal workings of the agents by displaying the Planner's generated plan, Executor's actions, and Critic's feedback for each step.
-    *   Reiterates conceptual diagrams of P-E-C and ReAct chains.
+    *   Shows LLM-powered analysis including strengths, concerns, recommendations, and objective alignment scores.
 
 4.  **Risk Analysis**:
     *   Delves into common emergent risks in agentic AI systems:
@@ -44,6 +44,23 @@ This application is structured into four main sections, each offering distinct f
         *   **Cascading Error Propagation**: How an initial fault can trigger systemic failures.
     *   Provides conceptual mathematical foundations, particularly for the **Utility/Reward Function**.
     *   Discusses strategies for designing robust agent architectures and implementing effective Human-in-the-Loop (HITL) oversight.
+
+## 🤖 LLM Integration (NEW!)
+
+This application now uses **actual AI agents** powered by Google's Gemini API instead of rule-based simulations:
+
+*   **PlannerAgent**: Uses Gemini to analyze market conditions and generate sophisticated trading strategies
+*   **ExecutorAgent**: Validates trades with LLM reasoning before execution
+*   **CriticAgent**: Provides nuanced performance analysis with strengths, concerns, and recommendations
+
+### Getting a Free Gemini API Key
+
+1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Sign in with your Google account
+3. Click "Create API Key"
+4. Copy the key and paste it in the sidebar of the application
+
+**Note**: The application includes intelligent fallback to rule-based agents if no API key is provided.
 
 ## Getting Started
 
@@ -120,6 +137,7 @@ quolab-agentic-ai-finance/
 
 *   **Framework**: [Streamlit](https://streamlit.io/)
 *   **Language**: Python 3.8+
+*   **AI/LLM**: [Google Gemini API](https://ai.google.dev/) (gemini-pro model)
 *   **Data Manipulation**: [Pandas](https://pandas.pydata.org/), [NumPy](https://numpy.org/)
 *   **Plotting**: [Matplotlib](https://matplotlib.org/), [Seaborn](https://seaborn.pydata.org/)
 *   **Conceptual Diagrams**: Placeholder images from Imgur are used (`https://i.imgur.com/example_pec_diagram.png`, `https://i.imgur.com/example_react_diagram.png`). For a production environment, consider hosting these locally or using a more robust image hosting service.
