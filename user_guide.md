@@ -3,285 +3,286 @@ summary: Lab 2: Large Language Models and Agentic Architectures User Guide
 feedback link: https://docs.google.com/forms/d/e/1FAIpQLSfWkOK-in_bMMoHSZfcIvAeO58PAH9wrDqcxnJABHaxiDqhSA/viewform?usp=sf_link
 environments: Web
 status: Published
-# Understanding Agentic AI Systems in Finance
+# Navigating the LLM Journey: A Retail Investor's Guide
 
-## Step 1: Introduction to Agentic AI and Key Architectures
-Duration: 05:00
+## Welcome to the LLM Journey Explorer & Navigating the Application
+Duration: 0:03:00
 
-<aside class="positive">
-In this first step, you will gain a foundational understanding of what Agentic AI systems are, why they are important, and the core architectural patterns that enable their intelligent behavior. This context is crucial before diving into the interactive simulation.
-</aside>
+Welcome to the "LLM Journey Explorer," an interactive guide designed specifically for retail investors to understand Large Language Models (LLMs), their lifecycle, and the critical risks associated with them. In today's rapidly evolving financial landscape, AI-powered tools are becoming increasingly prevalent. A conceptual understanding of how LLMs operate, their strengths, and potential pitfalls is crucial for informed decision-making and risk mitigation.
 
-Agentic AI systems represent a powerful evolution in artificial intelligence. Unlike traditional AI models that primarily execute predefined tasks or make predictions based on static data, **Agentic AI systems are designed to perceive their environment, reason about it, plan actions, and then execute those actions autonomously to achieve specific goals.** They continuously adapt their strategies based on feedback, making them highly dynamic and suitable for complex environments like financial markets.
-
-In finance, agentic systems can be used for automated trading, portfolio management, risk assessment, and more, offering the potential for increased efficiency and sophisticated decision-making. However, their autonomy also introduces unique risks that need careful consideration.
-
-### Key Characteristics of Agentic AI Systems:
-
-*   **Autonomy:** They can operate independently without constant human intervention.
-*   **Perception:** They observe and interpret information from their environment (e.g., market data).
-*   **Reasoning:** They process information to make decisions, identify patterns, and form strategic plans.
-*   **Action:** They interact with the environment by executing plans, often by using tools (e.g., placing trade orders).
-*   **Adaptation:** They learn from outcomes and feedback, refining their behavior over time.
-
-### The Planner-Executor-Critic (P-E-C) Loop Architecture
-
-A fundamental design for agentic AI systems is the **Planner-Executor-Critic (P-E-C) loop**. This architecture breaks down complex tasks into three interconnected roles, ensuring a continuous cycle of decision-making, action, and evaluation:
-
-1.  **Planner:** This component is the brain of the agent. It takes in the current state of the environment and feedback from the Critic to formulate a high-level strategy or a sequence of actions aimed at achieving the agent's objective. Think of it as developing a trading strategy for the next period.
-2.  **Executor:** The Executor is responsible for carrying out the Planner's instructions. It translates the high-level plan into concrete, executable actions and interacts with the environment. In our financial context, this involves actually placing buy or sell orders in the simulated market.
-3.  **Critic:** After the Executor's actions, the Critic evaluates the outcomes against the agent's predefined objectives, risk tolerances, and other performance metrics. It provides crucial feedback to the Planner, highlighting successes, failures, and deviations from the desired path. This feedback allows the Planner to learn and adjust its strategy for future steps.
-
-This continuous feedback loop is critical for the agent's ability to iteratively refine its behavior and improve its performance in a dynamic environment.
-
-A conceptual diagram of the P-E-C loop is shown below:
-<img src="https://i.imgur.com/example_pec_diagram.png" alt="Conceptual Diagram of the Planner-Executor-Critic (P-E-C) Loop" width="100%">
-*   **Planner:** Receives environment data and Critic's feedback, outputs a `Plan`.
-*   **Executor:** Takes the `Plan`, interacts with the `Environment`, executes `Actions`, and updates the `Environment`.
-*   **Critic:** Observes the `Environment State` (post-action), compares it to the `Objective`, evaluates the `Outcome`, and sends `Feedback` to the Planner.
-
-The Planner often uses **Decision Tree Logic** where:
-$$ \text{If Critique Result} = \text{Negative}, \text{then Plan Revision occurs} $$
-This means if the Critic identifies undesirable outcomes or deviations from the objective, the Planner will adjust its strategy for the next set of actions.
-
-### ReAct (Reasoning and Acting) Chains
-
-Another powerful architectural pattern that enhances the adaptability of agentic systems is **ReAct (Reasoning and Acting) Chains**. This approach interleaves explicit "Thought" (reasoning) steps with "Action" steps, mimicking human problem-solving.
-
-*   **Thought:** The agent pauses to reason about the current situation, identify sub-goals, analyze available tools or information, and decide on the next logical action.
-*   **Action:** Based on its thought, the agent executes a specific action. This might involve using a tool (e.g., a financial data API), interacting with the environment (e.g., querying market data), or performing a specific trade.
-
-This cycle of thinking and acting allows agents to perform complex, multi-step problem-solving and adapt more dynamically to unforeseen circumstances.
-
-A conceptual diagram of ReAct chains is shown below:
-<img src="https://i.imgur.com/example_react_diagram.png" alt="Conceptual Diagram of ReAct (Reasoning and Acting) Chains" width="100%">
-
-### Summary
-
-In this section, we've introduced the fundamental concepts of agentic AI and two key architectural patterns: the P-E-C loop and ReAct chains. These frameworks provide the basis for designing intelligent agents capable of autonomous decision-making in complex environments like financial markets. Now, let's move on to configuring our own simulated investment scenario.
-
-## Step 2: Setting Up the Simulated Investment Environment
-Duration: 07:00
+This codelab will take you through the core phases of an LLM's life: **Pre-training**, **Alignment**, and **Deployment**. For each phase, we will explore key concepts and demonstrate emergent risks such as data bias, hallucinations, and model drift, without delving into complex code. Our goal is to equip you with a foundational understanding to critically evaluate and engage with AI technologies.
 
 <aside class="positive">
-In this step, you will learn how to configure a synthetic market environment and define the objectives and constraints for your AI investment agent. This hands-on configuration will allow you to customize the simulation to explore different scenarios and observe how the agent behaves under various conditions.
+<b>Important:</b> This application uses interactive sliders and inputs to simulate complex LLM behaviors. Experiment with these controls to see how different parameters conceptually influence the model's outputs and risks.
 </aside>
 
-Navigate to the **"Scenario Builder"** page in the application.
+**Navigating the Application:**
 
-This section is where you define the initial conditions and parameters for your agentic AI investment simulation. Each parameter influences how the agent operates and how the market behaves.
+The application is structured into three main sections, accessible via the sidebar on the left.
 
-### Agent Objective & Risk Tolerance
+1.  **Overview & Pre-training**: You are currently on this page, covering the initial data learning phase and data bias.
+2.  **Alignment & Hallucinations**: This page explains how LLMs are refined to align with human values and the risk of generating false information.
+3.  **Deployment & Drift**: This section addresses what happens when LLMs are in real-world use, focusing on performance changes over time.
 
-*   **Agent Objective:** This text input defines the primary goal for your AI investment agent. Examples include "Maximize returns," "Safely grow portfolio," or "Generate steady income." The Planner component of the agent will interpret this objective to formulate its strategies.
-    *   **Recommendation:** Start with "Maximize returns."
-*   **Risk Tolerance:** This radio button allows you to set the agent's risk appetite.
-    *   **"safe"**: Aims for minimal volatility and capital preservation.
-    *   **"moderate"**: Balances growth with acceptable risk levels.
-    *   **"aggressive"**: Seeks high growth, even with higher risk exposure.
-    *   **Recommendation:** Start with "moderate."
+To begin, ensure you are on the "Overview & Pre-training" page, which is the default selection.
 
-### Environment Parameters
+## Understanding the LLM Lifecycle
+Duration: 0:02:00
 
-These settings define the characteristics of your simulated market:
+The development of a Large Language Model can be conceptually divided into three main phases, each with distinct processes and potential risks:
 
-*   **Initial Cash ($):** The starting amount of cash available in the agent's portfolio. This is the capital the agent has to work with.
-    *   **Recommendation:** Keep the default of $100,000.
-*   **Stock Symbols:** A multi-select box to choose which stock symbols will be available in your simulated market.
-    *   **Recommendation:** Keep the default `AAPL` and `GOOG`.
-*   **Initial Stock Prices ($):** For each selected stock, you can set its starting price. These prices form the baseline for market fluctuations.
-    *   **Recommendation:** Adjust these to create varied starting points, or keep defaults.
-*   **Market Volatility (e.g., 0.01 for 1%):** This number determines the magnitude of random price fluctuations in the simulated market. A higher value means more unpredictable and larger price swings. Volatility is key to simulating realistic market conditions.
-    *   **Recommendation:** Keep the default of `0.01`.
+1.  **Pre-training**: The initial, data-intensive phase where the model learns foundational patterns from vast amounts of text and code.
+2.  **Alignment**: The refinement phase where the model's behavior is steered to align with human values and specific task requirements.
+3.  **Deployment**: When the model is put into real-world use, requiring continuous monitoring and adaptation.
 
-### Critic Target Metrics
+The application displays a "Conceptual LLM Lifecycle Timeline" to visually represent this journey. Observe the flow from Pre-training to Deployment, recognizing that each stage is a building block for the next and introduces its own set of challenges.
 
-The Critic component evaluates the agent's performance. These metrics guide its evaluation:
+## Phase 1: Pre-training - Vast Data Ingestion and Pattern Recognition
+Duration: 0:04:00
 
-*   **Target Returns (e.g., 0.05 for 5%):** The percentage return the Critic aims for the portfolio to achieve over time. This helps the Critic determine if the Planner's strategies are effective in generating profits.
-    *   **Recommendation:** Keep the default of `0.05`.
-*   **Max Permissible Risk (e.g., 0.02 for 2%):** The maximum percentage drop in portfolio value the Critic tolerates within a step before flagging a warning. This is a critical risk control parameter.
-    *   **Recommendation:** Keep the default of `0.02`.
-*   **Risk Aversion Factor:** A coefficient used by the Critic to penalize risk-taking. A higher value means the Critic will apply a stronger penalty for actions it perceives as risky, influencing the Planner to adopt more conservative strategies.
-    *   **Recommendation:** Keep the default of `0.5`.
+Pre-training is the foundational step where LLMs are exposed to immense quantities of text and code data. Imagine an LLM reading nearly the entire internet! During this phase, the model's primary goal is to learn grammar, facts, reasoning abilities, and, most importantly, how to predict the next word in a sequence. This is fundamentally a process of identifying statistical relationships and patterns in the data it consumes.
 
-### Fault Injection (to observe emergent risks)
+Conceptually, the model aims to maximize the probability of predicting the correct next word given the preceding words, represented as $P(\text{next word} | \text{previous words})$.
 
-This advanced feature allows you to intentionally introduce errors into the simulation to observe how the agent responds and to identify potential emergent risks. We will explore these risks in more detail in Step 4.
+### Configuring Synthetic Text Data Generation
 
-*   **Mis-specify Goal:** Activate this checkbox to intentionally introduce a misalignment between the agent's stated objective and what might be truly desired. This demonstrates **Goal Mis-specification**.
-*   **Inject Fault at Step:** Specify the simulation step at which a fault will be injected.
-*   **Fault Type:** Choose the type of fault:
-    *   **"Market Anomaly"**: Simulates a sudden, unexpected event in the market (e.g., a stock price crash).
-    *   **"Agent Misperception"**: Simulates the agent misinterpreting data or changing its internal objective.
+Scroll down to the "Section 3: Phase 1: Pre-training - Vast Data Ingestion and Pattern Recognition" and locate the "Configure Synthetic Text Data Generation" expander.
+
+<aside class="positive">
+<b>Experiment:</b> Open this expander and adjust the sliders for "Number of Synthetic Sentences," "Vocabulary Size," and "Average Sentence Length."
+</aside>
+
+-   **Number of Synthetic Sentences**: Simulates the sheer volume of text data an LLM might encounter. More sentences mean more data to learn from.
+-   **Vocabulary Size**: Represents the diversity of unique words the model knows. A larger vocabulary allows for richer language.
+-   **Average Sentence Length**: Influences the contextual patterns the model learns within sentences.
+
+After adjusting the sliders, observe the output "Top 10 Synthetic Word Frequencies." This shows the most common words generated in our simulated dataset. These frequencies are a conceptual proxy for the statistical patterns an LLM learns, forming its "understanding" of language structure and word relationships.
+
+## Visualizing Pre-training: Word Probabilities
+Duration: 0:02:00
+
+The core of pre-training is learning the conditional probability $P(\text{next word} | \text{previous words})$. This means that for any given sequence of words, the model learns which words are most likely to follow. A word that appears more frequently in the training data (like those in our "Top 10 Synthetic Word Frequencies") will conceptually have a higher learned probability of appearing in certain contexts.
+
+The bar chart titled "Top 10 Word Frequency Distribution in Synthetic Corpus" visually represents these learned statistical regularities.
+
+-   **Observation:** Notice how some words are more frequent than others. In a real LLM, these frequency differences would translate into varying probabilities, guiding its text generation process to produce coherent and contextually relevant responses.
+
+## Emergent Risk: Data Bias during Pre-training
+Duration: 0:04:00
 
 <aside class="negative">
-Remember to click the "Initialize Environment" button after setting all your parameters. This action sets up the market environment and prepares the AI agents based on your configurations. Without initialization, you cannot proceed to the simulation.
+⚠️ <b>Emergent Risk: Data Bias</b> One of the most significant emergent risks during the pre-training phase is <b>data bias</b>. LLMs learn from the vast, often unfiltered, data of the internet. If this data contains societal biases (e.g., gender stereotypes, racial discrimination, specific economic viewpoints), the LLM will inadvertently encode and amplify these biases in its outputs. This can lead to skewed, unfair, or discriminatory responses, impacting critical decisions.
 </aside>
 
-Once initialized, you will see a JSON representation of the "Initial Environment State," confirming your settings.
-
-## Step 3: Running the Simulation and Analyzing Results
-Duration: 10:00
+Scroll to "Section 5: Emergent Risk: Data Bias during Pre-training" and find the "Configure Data Bias Simulation" expander.
 
 <aside class="positive">
-In this step, you will execute the agentic AI simulation, observe its behavior in real-time, and analyze the results using various metrics and visualizations. This interactive exploration will help you understand the dynamic interplay between the Planner, Executor, and Critic agents.
+<b>Experiment:</b> Open this expander and adjust the sliders:
+-   **Bias Strength (Proportion of Biased Samples)**: Increase this to simulate a larger percentage of biased data.
+-   **Biased Feature Mean Shift**: Increase this to make the "biased" group's feature values significantly different.
 </aside>
 
-Navigate to the **"Simulation & Results"** page.
+Below the expander, you'll see "Unbiased Outputs" and "Biased Outputs," each showing (Group 1 Mean, Group 2 Mean).
 
-If you haven't already, ensure you've configured your scenario and clicked "Initialize Environment" on the "Scenario Builder" page. A warning message will appear if the environment isn't ready.
+-   **Scenario Explanation:** We're simulating two groups of data. In the unbiased scenario, both groups have similar average conceptual outputs. When you introduce bias, a subset of the data is artificially shifted.
+-   **Observation:** Notice how the `conceptual_output` means for Group 1 and Group 2 (e.g., Group A and Group B in the chart) differ significantly in the "Biased Outputs" compared to the "Unbiased Outputs." This mimics how a real LLM would propagate and amplify these input biases into its generated content, potentially leading to unfair or unequal outcomes.
 
-### Simulation Controls
+## Visualizing the Impact of Data Bias
+Duration: 0:02:00
 
-*   **Run Single Step:** Click this button to advance the simulation by one step. This is useful for closely observing the agent's decision-making process at each stage.
-*   **Run Full Simulation (10 Steps):** Click this button to run the simulation for a predefined number of steps (e.g., 10). A progress bar will indicate the simulation's advancement.
-*   **Reset Simulation:** Use this button to clear all simulation data and revert the environment and agents to their initial state, allowing you to start a new simulation run.
+The bar chart titled "Comparison of Conceptual Output Means: Unbiased vs. Biased Data" clearly illustrates the impact of data bias.
 
-### P-E-C Loop and ReAct Chains Visualizations
-
-These sections display conceptual diagrams of the P-E-C loop and ReAct chains. While the current implementation does not offer real-time highlighting of the active component, these diagrams serve as a visual reminder of the underlying architecture that governs the agent's actions during the simulation.
-
-During each simulation step, the agent conceptually progresses through these stages:
-
-1.  **Market Movement:** The environment simulates price changes for the stocks.
-2.  **Planner:** Observes the new market state and previous Critic feedback, then generates a trading `Plan`.
-3.  **Executor:** Takes the `Plan` and performs the specified `Actions` (buys/sells) in the market.
-4.  **Critic:** Evaluates the `Outcome` of the Executor's actions, calculates `Reward`, and provides `Feedback` to the Planner for the next step.
-
-### Current Portfolio Metrics
-
-This section provides a real-time snapshot of your simulated investment portfolio:
-
-*   **Current Portfolio Value:** The total monetary value of your cash and stock holdings.
-*   **Cash Balance:** The amount of cash currently held by the agent.
-*   **Total Profit:** The overall gain or loss in the portfolio value since the beginning of the simulation.
-*   **Last Step Reward:** The numerical reward calculated by the Critic for the most recent simulation step. This is a key metric for understanding the Critic's evaluation.
-*   **Individual Stock Holdings:** A table showing the quantity, current price, and total value of each stock currently held in the portfolio.
-
-### Portfolio Evolution Plot
-
-This interactive plot visualizes how the **Portfolio Value** and **Portfolio Returns** change over simulation steps.
-
-*   The **Portfolio Value** plot shows the overall growth or decline of your investments.
-*   The **Returns (%)** plot shows the percentage change in portfolio value at each step, giving insight into short-term performance.
-
-These plots are essential for understanding the long-term performance and stability of your agent's strategy.
-
-### Reward Function Breakdown (Last Step)
-
-This section provides a detailed breakdown of the Critic's evaluation for the most recent step:
-
-*   **Profit Component:** The direct gain or loss from the market movement and trades in the last step.
-*   **Risk Taken (Normalized):** A numerical representation of the risk the agent took in the last step, influenced by factors like the number of trades and the overall risk tolerance.
-*   **Risk Penalty:** The penalty applied by the Critic due to the `Risk Taken`, scaled by the `Risk Aversion Factor`.
-*   **Calculated Reward:** The final reward, which is `Profit Component - Risk Penalty`. A higher reward indicates better performance according to the Critic's metrics.
-*   **Message & Status:** The Critic provides a message and status (`success`, `info`, `warning`) based on its evaluation, for example, if the portfolio dropped below the maximum permissible risk.
-
-### Trade Log
-
-A table detailing all the buy and sell actions executed by the Executor throughout the simulation. This log includes the step number, trade type (BUY/SELL), stock ID, quantity, price, status (SUCCESS/FAILED), and a reason. This is crucial for auditing the Executor's actions.
-
-### Agent Output Displays
-
-These sections show the raw outputs from each agent component for the last completed step:
-
-*   **Planner's Generated Plan (Last Step):** Displays the JSON output of the Planner's recommended actions, including the current effective objective it's working towards.
-*   **Executor's Action Details (Last Trades):** Shows the raw trade records from the Executor.
-*   **Critic's Feedback (Last Step):** Presents the full JSON output of the Critic's evaluation.
-
-By carefully observing these outputs and the overall metrics, you can gain a deep understanding of how the agent's objective, risk tolerance, and the dynamic market environment influence its behavior.
+-   **Interpretation:** Each pair of bars compares the average `conceptual_output` for a group in the unbiased scenario versus the biased scenario. You will likely see a noticeable difference in the heights of the 'Unbiased Data' bars compared to the 'Biased Data' bars for the same group, especially for the group most affected by the bias.
+-   **Real-world Implications:** If 'Group A' represents a demographic group (e.g., based on gender or ethnicity) and 'conceptual_output' is a score for a loan application or a job recommendation, the biased model might consistently give lower scores to Group A, demonstrating a tangible, unfair impact. This visualization underscores the critical need for fairness and bias detection in LLM training data.
 
 <aside class="positive">
-Experiment with running a few single steps, observing the changes, and then running a full simulation. Pay close attention to how the Critic's feedback might influence the Planner's subsequent plans.
+You have completed the "Overview & Pre-training" section. Now, let's move to the next phase of the LLM lifecycle.
 </aside>
 
-## Step 4: Risk Analysis and Robust Design
-Duration: 08:00
+**Navigation:** In the sidebar, change the "Navigation" dropdown selection from "Overview & Pre-training" to "Alignment & Hallucinations."
+
+## Phase 2: Alignment - Steering LLM Behavior with Human Values
+Duration: 0:02:00
+
+After pre-training, LLMs are **aligned** to make them more helpful, honest, and harmless. This is a critical phase where the model's vast knowledge is refined to follow instructions, avoid generating harmful content, and generally align with human values and societal norms.
+
+Key techniques in this phase include Supervised Fine-Tuning (SFT) and Reinforcement Learning from Human Feedback (RLHF). Alignment is where human judgment plays a direct and vital role in shaping an LLM's ethical and practical behavior, transforming a raw knowledge engine into a more refined and responsible assistant.
+
+## The Conceptual Loss Function: Guiding Model Learning
+Duration: 0:03:00
+
+During both pre-training and alignment, models learn by iteratively minimizing a **loss function**. This function quantifies the "error" or "discrepancy" between the model's predicted output and the desired (true) output. Think of it as a score that tells the model how "wrong" its current predictions are. The goal of training is to repeatedly adjust the model's internal parameters to make this loss as small as possible.
+
+Conceptually, a simple loss function can be expressed as:
+$$L = \text{Error}(\text{Predicted Output}, \text{True Output})$$
+Minimizing $L$ means the model is getting "closer" to generating the desired outputs, thus improving its performance.
+
+### Configuring Loss Minimization Simulation
+
+Scroll to "Section 8: The Conceptual Loss Function: Guiding Model Learning" and find the "Configure Loss Minimization Simulation" expander.
 
 <aside class="positive">
-In this step, you will explore the emergent risks associated with autonomous agentic AI systems, particularly in the context of finance. You will understand how phenomena like goal mis-specification, autonomy creep, and cascading errors can manifest, and learn about the conceptual mathematical foundations that underpin agent evaluation and robust design principles.
+<b>Experiment:</b> Open this expander and adjust the sliders:
+-   **Epochs**: Represents the number of training cycles the model goes through the data. More epochs generally lead to lower loss.
+-   **Initial Loss**: The starting error level of the model.
+-   **Learning Rate**: Determines how aggressively the model adjusts its parameters to reduce the loss in each step. A higher learning rate means faster, but potentially unstable, learning.
 </aside>
 
-Navigate to the **"Risk Analysis"** page.
+Observe the "Simulated Loss Values."
 
-Agentic AI systems, while powerful, can introduce new and complex risks due to their autonomy, adaptive nature, and interconnected components. Understanding and mitigating these risks is paramount for safe and effective deployment.
+-   **Observation:** The simulated `loss_values` show a decreasing trend over time. This represents the model's iterative process of learning from data and progressively reducing its errors. The loss decreases because the model is learning to make better predictions.
 
-### Emergent Risks in Agentic AI Systems
+## Visualizing Loss Function Minimization
+Duration: 0:02:00
 
-Expand each section on the page to learn about the specific risks:
+Visualizing the loss function over time (or training "epochs") helps us understand how effectively the model is learning.
 
-1.  **Goal Mis-specification:**
-    *   **Concept:** This occurs when the explicit objective given to an AI agent doesn't perfectly align with the human operator's true underlying intent. The agent, in its pursuit of the stated goal, might take undesirable or harmful actions because they are technically within the bounds of its specified objective.
-    *   **Demonstration (from simulation):** If you activated "Mis-specify Goal" in the "Scenario Builder," you might have observed the Planner's objective shifting (e.g., from "Maximize returns" to "Invest aggressively in volatile assets"). This highlights how even subtle misalignments in objective definition can lead to significant unintended consequences, as the agent optimizes for a goal that is not truly what the human intended.
-2.  **Autonomy Creep and Unintended Actions:**
-    *   **Concept:** This refers to the gradual increase in an agent's operational independence, potentially leading to actions beyond the scope or intent originally envisioned. Agents can find novel ways to achieve goals that were not explicitly forbidden but are undesirable.
-    *   **Demonstration (from simulation):** When "Mis-specify Goal" or "Agent Misperception" faults were injected, and the Planner's objective changed to something like "Execute high volume trades regardless of risk," the agent might have undertaken numerous risky trades, even if the initial risk tolerance was set to "moderate" or "safe." This demonstrates how the agent, in pursuing its (mis-specified) goal, can act with increasing independence and deviate from human expectations of safe behavior.
-3.  **Cascading Error Propagation:**
-    *   **Concept:** An initial fault or error in one part of an agentic system can trigger a series of subsequent errors across interconnected components, leading to a much larger, systemic failure.
-    *   **Demonstration (from simulation):** If you injected a "Market Anomaly" (e.g., a sudden price drop) or "Agent Misperception" fault at a specific step:
-        *   **Initial Impact:** The market data would be altered, or the Planner's strategy would be compromised.
-        *   **Subsequent Impacts:** The Executor might make trades based on this flawed information or plan. The Critic would then evaluate these actions, likely resulting in a negative reward and feedback. This negative feedback could then further influence the Planner in the next step, potentially creating a downward spiral of poor decisions or unintended trading patterns. This illustrates how a single point of failure can propagate throughout the entire P-E-C loop.
+The line plot titled "Conceptual Loss Minimization over Epochs" graphically displays the loss reduction.
 
-### Conceptual Mathematical Foundations
+-   **Interpretation:** The downward slope of the curve demonstrates the optimization process. As the LLM processes more data and adjusts its internal "weights" (parameters), the discrepancy between its predictions and the desired outcomes (its "error") decreases. A smooth, decreasing curve indicates that the model is successfully optimizing its parameters and improving its performance.
 
-The agent's decision-making and evaluation processes rely on underlying mathematical concepts, particularly the **Utility/Reward Function**.
+## Simulating Reinforcement Learning from Human Feedback (RLHF)
+Duration: 0:04:00
 
-*   **Utility/Reward Function:** This function is a core component of the Critic's evaluation. It quantifies the desirability of an agent's actions and outcomes, guiding it towards optimal behavior. In our simulation, the reward function aims to balance profit and risk.
+Reinforcement Learning from Human Feedback (RLHF) is a powerful alignment technique that directly incorporates human preferences. It's how models like ChatGPT learned to be so conversational and helpful. The process involves:
 
-    The general form of a reward function can be expressed as:
-    $$ \text{Reward} = \text{Profit} - \text{Risk Penalty} $$
-    *   $\text{Profit}$: Represents the gain or loss in portfolio value over a given step.
-    *   $\text{Risk Penalty}$: A term that increases with the level of risk taken by the agent. This is influenced by the `Risk Aversion` factor configured in the "Scenario Builder." Higher risk aversion means a larger penalty for the same amount of risk.
+1.  An LLM generates multiple responses to a given prompt.
+2.  **Human annotators** rank or rate these responses based on quality, helpfulness, and safety.
+3.  A separate "reward model" is trained on these human preferences, learning to predict what humans prefer.
+4.  The LLM is then fine-tuned using reinforcement learning to maximize the reward signal from this reward model, effectively learning to produce responses that humans prefer. This is an iterative process, continuously refining the model.
 
-    This function encourages the agent to maximize returns while simultaneously minimizing exposure to excessive risk.
+RLHF is where direct human judgment shapes an LLM's practical and ethical behavior.
 
-### Designing Robust Agent Architectures & Human Oversight
+### Configuring RLHF Simulation
 
-To mitigate these emergent risks and deploy agentic AI safely, several design principles and human-in-the-loop interventions are crucial:
-
-*   **Clear Goal Specification:** Define the agent's objectives unambiguously, covering all desired and undesired behaviors.
-*   **Bounded Autonomy:** Implement explicit constraints on the agent's actions, preventing it from operating outside predefined safe operational envelopes.
-*   **Transparency and Explainability:** Design agents that can articulate their reasoning and the basis for their actions, allowing human operators to understand and audit their behavior.
-*   **Continuous Monitoring and Human-in-the-Loop (HITL):**
-    *   **Human Oversight:** Passive monitoring of agent performance, identifying anomalies.
-    *   **Human Intervention:** Active capabilities to pause, redirect, or override agent actions when necessary.
-    *   **Human Feedback:** Providing explicit feedback to the agent to aid its learning and adaptation.
-*   **Fault Tolerance and Resilience:** Build architectures that can gracefully handle unexpected errors or anomalies without cascading failures, incorporating redundant systems and recovery mechanisms.
-
-By combining robust architectural design with vigilant human oversight, we can harness the power of agentic AI while effectively managing its inherent risks in critical applications like finance.
-
-## Step 5: Conclusion and Next Steps
-Duration: 02:00
+Scroll to "Section 10: Simulating Reinforcement Learning from Human Feedback (RLHF)" and find the "Configure RLHF Simulation" expander.
 
 <aside class="positive">
-Congratulations! You have successfully completed the codelab on Agentic AI Systems in Finance. In this final step, we will summarize your journey and provide guidance for further exploration.
+<b>Experiment:</b> Open this expander and adjust the sliders:
+-   **Feedback Rounds**: Represents how many cycles of human feedback and model fine-tuning occur. More rounds typically lead to better alignment.
+-   **Reward Improvement Factor**: Determines how much the model's "reward" (representing human preference) improves with each feedback round.
 </aside>
 
-Throughout this codelab, you have:
+First, you'll see a sample `feedback_data` table, showing conceptual queries and how humans might have preferred one response over another. Below that, observe the "Simulated Reward History."
 
-*   **Gained an introduction** to the concept of Agentic AI systems and their significance in dynamic environments such as financial markets.
-*   **Understood key architectural patterns** like the Planner-Executor-Critic (P-E-C) loop and ReAct (Reasoning and Acting) chains, which form the backbone of intelligent agents.
-*   **Configured and simulated** your own investment scenarios, observing how different objectives, risk tolerances, and market parameters influence an AI agent's behavior.
-*   **Analyzed simulation results**, including portfolio performance, trade logs, and the detailed feedback from the Critic agent.
-*   **Explored critical emergent risks** such as goal mis-specification, autonomy creep, and cascading error propagation, recognizing their importance in designing safe and reliable AI systems.
-*   **Understood the conceptual mathematical foundations**, particularly the Utility/Reward Function, that guide agent decision-making.
-*   **Learned about robust design principles** and the vital role of human-in-the-loop (HITL) interventions and oversight for managing the risks of autonomous AI.
+-   **Observation:** The `reward_history` conceptually demonstrates how the model's ability to generate preferred responses improves with more rounds of human feedback. The reward signal increases, indicating better alignment with human preferences.
 
-### Key Takeaways:
+## Visualizing Reward Signal Improvement
+Duration: 0:02:00
 
-*   Agentic AI systems offer powerful capabilities for autonomous decision-making and adaptation.
-*   Structured architectures like P-E-C and ReAct are essential for managing complexity.
-*   Careful configuration and continuous monitoring are crucial for successful deployment.
-*   Understanding and mitigating emergent risks is paramount for safe and ethical AI development.
-*   Human oversight remains an indispensable component in complex AI systems.
+The line plot titled "Conceptual Reward Signal Improvement over RLHF Rounds" visualizes the progress of RLHF.
 
-This simulation provides a simplified yet insightful glimpse into the world of agentic AI. The principles discussed here are applicable across various domains beyond finance, wherever autonomous systems are deployed.
+-   **Interpretation:** This upward-sloping curve signifies the success of the alignment process. Each "feedback round" allows the model to better understand and incorporate human values and preferences, leading to more desirable, safer, and helpful outputs. A rising reward signal is a strong indicator of a more aligned and user-friendly LLM.
 
-### Further Exploration:
+## Emergent Risk: Hallucinations - Factual Inaccuracies
+Duration: 0:04:00
 
-*   **Experiment with different scenarios:** Go back to the "Scenario Builder" and try varying the agent's objective, risk tolerance, market volatility, and fault injection parameters. Observe how these changes impact the simulation results and the agent's behavior.
-*   **Deepen your understanding of specific risks:** Intentionally inject different types of faults at various steps to see their specific effects on the P-E-C loop and overall portfolio performance.
-*   **Consider real-world applications:** Reflect on how these agentic principles could be applied to other areas of finance or even different industries entirely, and what challenges might arise.
+<aside class="negative">
+⚠️ <b>Emergent Risk: Hallucinations</b> <b>Hallucinations</b> are a critical emergent risk where LLMs generate outputs that are factually incorrect or nonsensical, yet appear credible and fluent. These can range from minor inaccuracies to completely fabricated information. Hallucinations are particularly dangerous in high-stakes applications like financial advice, medical diagnosis, or legal counsel, where incorrect information can have severe consequences.
+</aside>
 
-Thank you for completing this QuLab codelab. We hope this experience has provided you with a valuable foundation for understanding and working with Agentic AI Systems.
+Scroll to "Section 12: Emergent Risk: Hallucinations - Factual Inaccuracies" and find the "Configure Hallucination Simulation" expander.
+
+<aside class="positive">
+<b>Experiment:</b> Open this expander and adjust the sliders:
+-   **Conceptual Hallucination Score (Factual Response)**: A low score here indicates high factual correctness.
+-   **Conceptual Hallucination Score (Hallucinated Response)**: A high score here indicates a high likelihood of factual error.
+</aside>
+
+Below the expander, you'll see "Factual Response Example" and "Hallucinated Response Example" outputs.
+
+-   **Scenario Explanation:** We provide an example query ("What is the capital of France?"), a correct answer, and then simulate two LLM responses: one factual and one hallucinated.
+-   **Observation:** The `hallucination_score` is a conceptual metric assigned to each response, representing its reliability. A lower score (closer to 0) suggests higher factual correctness, while a higher score (closer to 1) indicates a higher risk of the information being incorrect or a "hallucination." Compare the scores for the factual vs. hallucinated responses.
+
+## Visualizing Hallucination Likelihood
+Duration: 0:02:00
+
+The bar chart titled "Conceptual Hallucination Meter" makes the difference in reliability stark.
+
+-   **Interpretation:** The significantly higher hallucination score for the incorrect (hallucinated) response compared to the factual response serves as a visual warning. This conceptual meter helps users gauge the uncertainty or potential for inaccuracy in an LLM's output, prompting them to verify critical information before acting upon it. This emphasizes the importance of critical evaluation when using LLMs.
+
+## Introduction to Agentic AI Systems and Risk Amplification
+Duration: 0:03:00
+
+While LLMs are powerful on their own, their capabilities are greatly expanded in **Agentic AI systems**. These systems are designed to perceive, reason, plan, and act autonomously, often by leveraging LLMs as their "brains" to make decisions and interact with tools and environments (e.g., browsing the web, calling APIs, executing code).
+
+This increased autonomy, however, inherently **amplifies risks**. Errors or biases that might be contained within a standalone LLM can cascade into real-world consequences when an agent takes autonomous action. For instance, a hallucination might lead an agent to generate an incorrect financial report or execute a flawed trade. Risks include mis-planned goals, unintended actions, and the potential for magnified errors.
+
+<aside class="positive">
+<b>Key Concept:</b> Understanding Agentic AI is crucial because it represents a major shift towards more autonomous systems. While powerful, this autonomy demands even greater vigilance regarding the underlying LLM's reliability and ethical alignment, as the system can act on its own decisions.
+</aside>
+
+<aside class="positive">
+You have completed the "Alignment & Hallucinations" section. Let's proceed to the final phase.
+</aside>
+
+**Navigation:** In the sidebar, change the "Navigation" dropdown selection from "Alignment & Hallucinations" to "Deployment & Drift."
+
+## Phase 3: Deployment - Continuous Monitoring and Adaptation
+Duration: 0:02:00
+
+Once an LLM is deployed into a real-world application, the lifecycle continues with **continuous monitoring**. Deployment is not the end of the LLM journey, but a new beginning of active management and oversight. This phase is crucial for ensuring the model remains robust, performs as expected, and adapts to new data distributions or changing user behaviors. Without vigilant monitoring, models can degrade, leading to performance issues and the re-emergence of risks.
+
+## Emergent Risk: Model Drift - Shifting Performance
+Duration: 0:05:00
+
+<aside class="negative">
+⚠️ <b>Emergent Risk: Model Drift</b> <b>Model drift</b> (or concept drift) occurs when the statistical properties of the target variable, or the relationship between the input variables and the target variable, change over time. In LLMs, this can mean the model's performance degrades because the real-world data it encounters diverges significantly from its training data. For example, if an LLM was trained on data up to 2021, and new slang or economic terms emerge, its understanding might "drift" from current reality.
+</aside>
+
+To detect drift, we can establish a **Drift Threshold** based on the model's baseline performance, often defined using basic statistics:
+$$\text{Drift Threshold} = \mu \pm k \cdot \sigma$$
+where $\mu$ is the mean, $\sigma$ is the standard deviation of the performance metric during a stable baseline period, and $k$ is a multiplier (e.g., 2 or 3 for standard deviations) to define the acceptable range. If the model's performance falls outside this threshold, drift is detected.
+
+### Configure Model Drift Simulation
+
+Scroll to "Section 16: Emergent Risk: Model Drift - Shifting Performance" and find the "Configure Model Drift Simulation" expander.
+
+<aside class="positive">
+<b>Experiment:</b> Open this expander and adjust the sliders:
+-   **Number of Time Steps**: The duration over which we observe the model's performance.
+-   **Baseline Mean Accuracy**: The average expected performance when the model is stable.
+-   **Baseline Std Dev for Accuracy**: The natural variation expected in performance during stability.
+-   **Drift Start Time Step**: The point in time when the conceptual performance degradation begins.
+-   **Drift Magnitude (Performance Drop)**: How significantly the performance drops due to drift.
+-   **Multiplier ($k$) for Drift Threshold**: Adjusts how wide the acceptable performance range is. A larger $k$ means a wider, more tolerant threshold.
+</aside>
+
+Observe the outputs: "Baseline Mean Accuracy," "Drift Threshold (Lower, Upper)," "Current Performance," and "Drift Detected."
+
+-   **Scenario Explanation:** We're simulating a model's accuracy over time. Initially, it performs around a stable baseline. At the `Drift Start Time Step`, its performance conceptually drops.
+-   **Observation:** The calculated drift thresholds provide an upper and lower boundary for acceptable performance. The detector indicates `True` if the "Current Performance" (the latest simulated data point) falls outside this acceptable range, signaling that potential drift has occurred.
+
+## Visualizing Model Drift
+Duration: 0:02:00
+
+The line plot titled "Model Performance Over Time with Drift Thresholds" provides a clear visualization of model drift.
+
+-   **Interpretation:** The blue line represents the model's simulated performance over time. The green dashed line is the baseline mean, and the red dotted lines are the upper and lower drift thresholds. When the blue line drops below the lower red threshold (or rises above the upper one), and the red shaded area appears, it visually confirms model drift.
+-   **Actionable Insight:** Such a clear detection of drift would trigger the need for investigation. This might involve re-evaluating the input data, retraining the model with new data, or adapting the model to the changed environment to restore its expected performance. Continuous monitoring with visualizations like this is vital for maintaining the reliability of deployed LLMs.
+
+## The Importance of Human Oversight and Accountability
+Duration: 0:03:00
+
+Throughout the entire LLM lifecycle, and especially with the rise of Agentic AI, **human oversight and accountability** are paramount. While AI systems offer incredible capabilities, they are tools designed and operated by humans, and their impact ultimately falls back on human responsibility. This involves:
+
+*   **Human-in-the-Loop (HITL) checkpoints**: Integrating human review and intervention points for critical decisions or actions generated by LLMs or Agentic systems. This ensures that potentially biased, hallucinated, or drifted outputs are caught before causing harm.
+*   **Transparent processes**: Documenting data sources, model architectures, training procedures, and decision-making logic to enable auditing, explainability, and reproducibility.
+*   **Clear responsibilities**: Defining who is accountable for an AI system's outcomes, whether it's the developers, deployers, or users.
+
+Human feedback and continuous monitoring are not just technical requirements; they are ethical imperatives to ensure AI systems remain beneficial, fair, and aligned with societal values. This section reinforces that while AI technology advances, human judgment, ethical considerations, and robust governance frameworks are indispensable for responsible AI development and deployment.
+
+## Conclusion and Key Takeaways
+Duration: 0:02:00
+
+We have journeyed through the lifecycle of Large Language Models, from their fundamental pre-training to their critical alignment with human values, and finally to their deployment and continuous monitoring. We've seen how emergent risks like **data bias**, **hallucinations**, and **model drift** can arise at different stages and how these risks are amplified by the autonomy of **Agentic AI** systems.
+
+**Key Takeaways**:
+
+*   LLMs learn patterns from vast data, but this process can embed and amplify societal biases, leading to unfair outcomes.
+*   Alignment processes like RLHF are crucial for steering LLMs towards helpful and harmless behavior, but human feedback itself requires careful design and consideration.
+*   LLMs are prone to "hallucinating" factually incorrect information, especially in high-stakes contexts, requiring critical verification.
+*   Model performance can degrade over time due to "drift" as real-world data changes, necessitating continuous monitoring and adaptation.
+*   Human oversight, transparent processes, and clear accountability are essential for managing AI risks and ensuring trustworthy AI.
+
+This concludes our exploration of the LLM Journey. We hope this application has provided you, as a retail investor, with a clearer conceptual understanding of LLMs, their lifecycle, and the critical risks to be aware of in the evolving landscape of AI. Equipped with this knowledge, you can approach AI-powered tools with a more informed and discerning perspective.
