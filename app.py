@@ -6,43 +6,45 @@ st.sidebar.divider()
 st.title("QuLab")
 st.divider()
 
-st.markdown("""
-In this lab, you will step into the role of a **retail investor** evaluating an AI-powered
-research assistant built on top of Large Language Models (LLMs) and Agentic AI
-architectures.
+st.markdown(
+    r"""
+In this lab, you will step into the role of a **risk-aware retail investor** exploring how Large Language Models (LLMs) and Agentic AI systems are built, aligned, and deployed.
 
-The goal of this application is to help you **experience** how LLMs are trained,
-aligned, and monitored in deployment, and where critical risks such as **data bias**,
-**hallucinations**, and **model drift** can arise.
+The goal of this interactive lab is to help you:
 
-Use the navigation menu in the sidebar to explore the three main phases:
-1. **Overview & Story** – Set the context for the LLM journey.
-2. **Pre-training & Data Bias** – Play with synthetic corpora and bias simulations.
-3. **Alignment, Loss & RLHF** – See how models are steered with loss functions and
-   human feedback.
-4. **Hallucinations, Drift & Oversight** – Investigate runtime risks and the role of
-   human governance, especially in Agentic AI systems.
-""")
+* Understand how each phase of the LLM lifecycle connects to concrete business and investment risks.
+* Experiment with sliders and controls to see how hidden technical choices (data bias, learning rates, drift thresholds) can materially change system behavior.
+* Build intuition for why **human oversight, governance, and monitoring** are as important as the underlying algorithms.
+
+Use the sidebar navigation to move between phases of the LLM journey:
+
+1. **LLM Overview & Pre-training** - Build and inspect a synthetic corpus, explore word statistics, and see how bias creeps in.
+2. **Alignment & Hallucinations** - Simulate loss minimization, RLHF, and visualize hallucination risk.
+3. **Deployment, Drift & Oversight** - Monitor performance over time, detect drift, and connect this to ongoing governance.
+
+As you move through the pages, imagine you are evaluating an AI-powered product or company:
+What could go wrong at each step, and what controls would you expect management to have in place?
+"""
+)
 
 page = st.sidebar.selectbox(
     label="Navigation",
     options=[
-        "Overview & Story",
-        "Pre-training & Data Bias",
-        "Alignment, Loss & RLHF",
-        "Hallucinations, Drift & Oversight",
+        "LLM Overview & Pre-training",
+        "Alignment & Hallucinations",
+        "Deployment, Drift & Oversight",
     ],
 )
 
-if page == "Overview & Story":
-    from application_pages.overview_story import main as page_main
-    page_main()
-elif page == "Pre-training & Data Bias":
-    from application_pages.pretraining_bias import main as page_main
-    page_main()
-elif page == "Alignment, Loss & RLHF":
-    from application_pages.alignment_rlhf import main as page_main
-    page_main()
-elif page == "Hallucinations, Drift & Oversight":
-    from application_pages.hallucinations_drift import main as page_main
-    page_main()
+if page == "LLM Overview & Pre-training":
+    from application_pages.page_llm_overview_pretraining import main
+
+    main()
+elif page == "Alignment & Hallucinations":
+    from application_pages.page_alignment_hallucinations import main
+
+    main()
+elif page == "Deployment, Drift & Oversight":
+    from application_pages.page_deployment_drift_oversight import main
+
+    main()
